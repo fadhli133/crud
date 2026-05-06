@@ -1,59 +1,64 @@
-<?php
-require_once 'config/koneksi.php';
-$query = "SELECT * FROM tb_absensi ORDER BY id DESC";
-$result = $conn->query($query);
-?>
+<?php include 'koneksi.php'; ?>
 
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Data Absensi</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid #333;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Absensi Siswa</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
 
-<h2>Data Absensi</h2>
+<body class="bg-light">
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nama</th>
-            <th>Tanggal</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php if ($result->num_rows > 0): ?>
-            <?php while($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?= $row['id']; ?></td>
-                    <td><?= $row['nama_siswa']; ?></td>
-                    <td><?= $row['tanggal']; ?></td>
-                    <td><?= $row['status']; ?></td>
-                </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="4">Tidak ada data</td>
-            </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
+<div class="container mt-5">
+    <div class="card shadow rounded-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between">
+            <h4>Data Absensi</h4>
+            <a href="tambah.php" class="btn btn-light btn-sm">+ Tambah</a>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-hover text-center">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Keterangan</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                <?php
+                $no = 1;
+                $data = mysqli_query($conn, "SELECT * FROM tb_absensi ORDER BY id DESC");
+
+                while ($d = mysqli_fetch_array($data)) {
+                ?>
+                    <tr>
+                        <td><?= $no++ ?></td>
+                        <td><?= $d['nama_siswa'] ?></td>
+                        <td>
+                            <span class="badge bg-<?=
+                                ($d['keterangan'] == 'Hadir') ? 'success' :
+                                (($d['keterangan'] == 'Izin') ? 'warning' : 'danger')
+                            ?>">
+                                <?= $d['keterangan'] ?>
+                            </span>
+                        </td>
+                        <td></td>
+                        <td>
+                            <a href="edit.php?id=<?= $d['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="hapus.php?id=<?= $d['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus?')">Hapus</a>
+                        </td>
+                    </tr>
+                <?php } ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
